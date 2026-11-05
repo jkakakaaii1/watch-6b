@@ -5,6 +5,7 @@ API_KEY 和 NTFY_TOPIC 从 GitHub Secrets 读取，不写在代码里。
 """
 
 import os
+import time
 import requests
 
 API_KEY = os.environ["UCSB_API_KEY"]
@@ -55,7 +56,7 @@ def notify(title, msg):
     )
 
 
-def main():
+def check_once():
     sp = spaces(fetch())
     for code, (e, c) in sp.items():
         print(code, f"{e}/{c}")
@@ -73,8 +74,22 @@ def main():
             "可选: " + ", ".join(open_secs) + "\n快去 GOLD 加课",
         )
         print("已推送")
-    else:
-        print("暂无空位")
+        return True
+    print("暂无空位")
+    return False
+
+
+def main():
+    # 每次运行查 5 次，每次间隔 60 秒，配合每 5 分钟触发一次
+    for i in range(5):
+        print(f"--- 第 {i + 1} 次 ---")
+        try:
+            if check_once():
+                return  # 推送过就结束，避免一分钟刷一条
+        except Exception as e:
+            print("出错:", e)
+        if i < 4:
+            time.sleep(60)
 
 
 if __name__ == "__main__":
