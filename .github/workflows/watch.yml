@@ -2,7 +2,7 @@ name: watch-6b
 
 on:
   schedule:
-    - cron: "*/10 * * * *"   # 每 10 分钟（GitHub 可能会延迟几分钟）
+    - cron: "*/5 * * * *"    # 每 5 分钟触发，脚本内部每分钟查一次
   workflow_dispatch:          # 允许手动点按钮运行
 
 jobs:
